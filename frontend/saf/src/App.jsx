@@ -1,5 +1,5 @@
-function App() {
-  return <h1>IT WORKS!!</h1>;
-}
+import RoleSelector from "./components/RoleSelector";
 
-export default App;
+export default function App() {
+  return <RoleSelector />;
+}
