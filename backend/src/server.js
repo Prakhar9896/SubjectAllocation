@@ -1,13 +1,18 @@
-import dotenv from "dotenv";
-import app from "./app.js";
+import express from 'express';
+import dotenv from 'dotenv';
+import preferencesRoutes from './routes/preferencesRoutes.js';
 
-// Load environment variables
 dotenv.config();
 
-// Define port
-const PORT = process.env.PORT || 4000;
+console.log("SERVER FILE LOADED");
 
-// Start server
+const app = express();
+
+app.use(express.json());
+app.use('/api/preferences', preferencesRoutes);
+
+const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on ${PORT}`);
 });
