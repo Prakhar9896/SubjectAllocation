@@ -1,5 +1,20 @@
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AdminLogin from "./pages/Adminlogin"
+import Facultyauth from "./pages/Facultyauth";
+import FacultyRegister from "./pages/FacultyRegister";
 import RoleSelector from "./components/RoleSelector";
+import FacultyDashboard from "./pages/FacultyDashboard";
 
 export default function App() {
-  return <RoleSelector />;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<RoleSelector />} />
+        <Route path="/login" element={<Facultyauth />} />
+        <Route path="/register" element={<FacultyRegister />} />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/fdb" element={<FacultyDashboard />} />
+      </Routes>
+    </Router>
+  );
 }
