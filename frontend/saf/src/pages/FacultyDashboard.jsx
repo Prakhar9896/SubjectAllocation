@@ -89,13 +89,18 @@ export default function FacultyDashboard({
           <option value="">Program</option>
           <option>B.Tech</option>
           <option>M.Tech</option>
+          <option>MCA</option>
         </select>
 
         <select onChange={(e) => setFilters({ ...filters, semester: e.target.value })}>
           <option value="">Semester</option>
-          <option value="2">2</option>
-          <option value="4">4</option>
-          <option value="6">6</option>
+          <option value="1">I</option>
+          <option value="2">II</option>
+          <option value="3">III</option>
+          <option value="4">IV</option>
+          <option value="5">V</option>
+          <option value="6">VI</option>
+          <option value="7">VII</option>
         </select>
 
         <select onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
@@ -106,8 +111,17 @@ export default function FacultyDashboard({
 
         <select onChange={(e) => setFilters({ ...filters, branch: e.target.value })}>
           <option value="">Branch</option>
-          <option>CSE</option>
-          <option>AI</option>
+          <option value="">All Branches</option>
+          <option value="cse">CSE</option>
+          <option value="aiml">CSE (AI&ML)</option>
+          <option value="csis">CSIS</option>
+          <option value="fintech">CSE & FIN-TECH</option>
+          <option value="it">IT</option>
+          <option value="cce">CCE</option>
+          <option value="cne">CSE (Computer Networking and Engg.) </option>
+          <option value="aids">CSE (AIDS)</option>
+          <option value="cs">CSE(Cyber security)</option>
+          <option value="dse">DSE</option>
         </select>
       </div>
 

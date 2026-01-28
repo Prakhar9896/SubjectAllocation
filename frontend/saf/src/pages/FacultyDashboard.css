@@ -7,12 +7,21 @@
 }
 
 .header h2 {
-  font-size: 32px;
-  margin-bottom: 6px;
+  font-size: 40px;
+  margin-bottom: 24px;
+}
+
+h3 {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  font-size: 24px;
+  text-align: start;
 }
 
 .header p {
   opacity: 0.9;
+  font-size: 19px;
+  margin-bottom: 20px;
 }
 
 .load-indicator {
@@ -48,13 +57,13 @@
 
 .course-list {
   display: grid;
-  gap: 14px;
+  gap: 30px;
 }
 
 .course-card {
   background: white;
   color: #222;
-  padding: 18px;
+  padding: 24px;
   border-radius: 14px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
