@@ -5,7 +5,7 @@ export default function FacultyDashboard({
   facultyProfile = {
     name: "Dr. A. Sharma",
     rank: "Professor",
-    maxLoad: 16,
+    maxLoad: 14,
   },
 }) {
   const [courses] = useState([
@@ -74,6 +74,42 @@ export default function FacultyDashboard({
     return true;
   });
 
+  const handleDragStart = (e,course) => {
+    e.dataTransfer.effectAlloved="move";
+    e.dataTransfer.setData("text/plain", course.id);
+  };
+
+  const handleDragOver =(e) => {
+    e.preventDefault();
+  };
+
+const handleDrop = (e, choiceKey) => {
+  e.preventDefault();
+
+  const courseId = e.dataTransfer.getData("text/plain");
+  if (!courseId) return;
+
+  const course = courses.find((c) => c.id === Number(courseId));
+  if (!course) return;
+
+  setChoices((prev) => {
+    if (prev[choiceKey].some((c) => c.id === course.id)) return prev;
+
+    return {
+      ...prev,
+      [choiceKey]: [...prev[choiceKey], { ...course, sections: 1 }],
+    };
+  });
+};
+;
+
+const handleRemove = (choiceKey, courseId) => {
+  setChoices((prev) => ({
+    ...prev,
+    [choiceKey]: prev[choiceKey].filter((c) => c.id !== courseId),
+  }));
+};
+
   return (
     <div className="faculty-dashboard">
       <div className="header">
@@ -88,8 +124,7 @@ export default function FacultyDashboard({
         <select onChange={(e) => setFilters({ ...filters, program: e.target.value })}>
           <option value="">Program</option>
           <option>B.Tech</option>
-          <option>M.Tech</option>
-          <option>MCA</option>
+
         </select>
 
         <select onChange={(e) => setFilters({ ...filters, semester: e.target.value })}>
@@ -127,21 +162,49 @@ export default function FacultyDashboard({
 
       <h3>Available Courses</h3>
 
-      <div className="course-list">
-        {filteredCourses.map((course) => (
-          <div key={course.id} className="course-card">
-            <p>
-              {course.program} | Sem {course.semester} | {course.name} |{" "}
-              {course.is_core ? "Core" : "Elective"} | {course.clh} CLH
-            </p>
-            <div className="actions">
-              <button onClick={() => handleSelect("choice1", course)}>Choice I</button>
-              <button onClick={() => handleSelect("choice2", course)}>Choice II</button>
-              <button onClick={() => handleSelect("choice3", course)}>Choice III</button>
-            </div>
-          </div>
-        ))}
+      <div className="layout">
+  {/* LEFT COLUMN */}
+  <div className="course-list">
+    {filteredCourses.map((course) => (
+      <div
+        key={course.id}
+        className="course-card"
+        draggable
+        onDragStart={(e) => handleDragStart(e, course)}
+      >
+        <p>
+          {course.program} | Sem {course.semester} | {course.name} |{" "}
+          {course.is_core ? "Core" : "Elective"} | {course.clh} CLH
+        </p>
       </div>
-    </div>
+    ))}
+  </div>
+
+  {/* RIGHT COLUMN */}
+  <div className="sidebar choices">
+    {["choice1", "choice2", "choice3"].map((key, index) => (
+      <div
+        key={key}
+        className="choice-box"
+        onDragOver={handleDragOver}
+        onDrop={(e) => handleDrop(e, key)}
+      >
+        <h3>Choice {index + 1}</h3>
+
+        {choices[key].length > 0 ? (
+          choices[key].map((c) => (
+            <div key={c.id} className="selected-item">
+              {c.name}
+            </div>
+          ))
+        ) : (
+          <div className="empty">Drop courses here</div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+      </div>
   );
 }
