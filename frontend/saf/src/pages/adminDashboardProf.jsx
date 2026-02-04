@@ -193,7 +193,7 @@ const PREFERENCES = [
   { preference_id: 28, staff_id: 10, course_id: 2, preference_rank: 2 },
 ];
 
-export default function AdminDashboard() {
+export default function AdminDashboardProf() {
   const [staff, setStaff] = useState(STAFF);
   const [staffDetails, setStaffDetails] = useState(STAFF_DETAILS);
   const [preferences, setPreferences] = useState(PREFERENCES);
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
   return (
     <div className="p-5 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">
-        Admin Dashboard - Faculty Assignment
+        Admin Dashboard – Faculty Wise Allocation
       </h1>
 
       {/* <div className="bg-blue-50 p-4 rounded-lg mb-6">

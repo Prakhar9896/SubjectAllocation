@@ -5,7 +5,8 @@ import Facultyauth from "./pages/Facultyauth";
 import FacultyRegister from "./pages/FacultyRegister";
 import RoleSelector from "./components/RoleSelector";
 import FacultyDashboard from "./pages/FacultyDashboard";
-import AdminDashboard from "./pages/adminDashboard";
+import AdminDashboardProf from "./pages/adminDashboardProf";
+import AdminDashboardSubj from "./pages/adminDashboardSubj";
 export default function App() {
   const [facultyProfile, setFacultyProfile] = useState({
     name: "Dr. Sarah Johnson",
@@ -24,7 +25,8 @@ export default function App() {
           path="/faculty-dashboard" 
           element={<FacultyDashboard facultyProfile={facultyProfile} />}
         />
-        <Route path="admin-dashboard" element={<AdminDashboard/>}/>
+        <Route path="admin-dashboard-subj" element={<AdminDashboardSubj/>}/>
+        <Route path="admin-dashboard-prof" element={<AdminDashboardProf/>}/>
       </Routes>
     </Router>
   );
