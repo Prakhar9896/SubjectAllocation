@@ -1,0 +1,90 @@
+.profile-page {
+  min-height: 100vh;
+  background: #123b5a;
+}
+
+.profile-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 30px 20px 50px;
+  font-family: system-ui, sans-serif;
+}
+
+.profile-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-logo {
+  height: 46px;
+}
+
+.nav-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.nav-dashboard-btn {
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+}
+
+.big-card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  margin-bottom: 22px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.choice-card,
+.assigned-card {
+  background: #e5e7eb;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.choice-card h4 {
+  margin: 0;
+}
+
+.choice-card p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #334155;
+}
+
+.profile-loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: white;
+}
+.profile-section-title {
+  margin-bottom: 10px;
+  font-size: 19px;
+  font-weight:500;
+}
