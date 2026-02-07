@@ -32,7 +32,7 @@ const STAFF = [
   { staff_id: 10, rank: "Professor", max_load_clh: 14 },
 ];
 
-const STAFF_DETAILS = [
+const STAFF_DETAILS_INIT = [
   { staff_id: 1, name: "Dr. Sarah Johnson", currentLoad: 8 },
   { staff_id: 2, name: "Prof. Michael Chen", currentLoad: 6 },
   { staff_id: 3, name: "Dr. Emily Watson", currentLoad: 9 },
@@ -49,7 +49,6 @@ const PREFERENCES = [
   { staff_id: 1, course_id: 1, preference_rank: 1 },
   { staff_id: 2, course_id: 1, preference_rank: 1 },
   { staff_id: 7, course_id: 1, preference_rank: 1 },
-
   { staff_id: 4, course_id: 1, preference_rank: 2 },
   { staff_id: 5, course_id: 1, preference_rank: 3 },
 ];
@@ -59,28 +58,21 @@ const PREFERENCES = [
 export default function AdminDashboardSubjectWise() {
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [selectedStaffId, setSelectedStaffId] = useState(null);
-  const [staffDetails, setStaffDetails] = useState(STAFF_DETAILS);
+  const [staffDetails, setStaffDetails] = useState(STAFF_DETAILS_INIT);
 
-  const selectedCourse = COURSES.find(
-    (c) => c.course_id === selectedCourseId,
-  );
+  const selectedCourse = COURSES.find((c) => c.course_id === selectedCourseId);
 
   const getStaffForRank = (rank) => {
     return PREFERENCES.filter(
-      (p) =>
-        p.course_id === selectedCourseId &&
-        p.preference_rank === rank,
+      (p) => p.course_id === selectedCourseId && p.preference_rank === rank,
     )
       .map((p) => {
         const staff = STAFF.find((s) => s.staff_id === p.staff_id);
-        const detail = staffDetails.find(
-          (d) => d.staff_id === p.staff_id,
-        );
+        const detail = staffDetails.find((d) => d.staff_id === p.staff_id);
         return { ...staff, ...detail };
       })
       .sort((a, b) => {
-        const r =
-          RANK_PRIORITY[a.rank] - RANK_PRIORITY[b.rank];
+        const r = RANK_PRIORITY[a.rank] - RANK_PRIORITY[b.rank];
         if (r !== 0) return r;
         return a.currentLoad - b.currentLoad;
       });
@@ -94,9 +86,7 @@ export default function AdminDashboardSubjectWise() {
         d.staff_id === selectedStaffId
           ? {
               ...d,
-              currentLoad:
-                d.currentLoad +
-                selectedCourse.calculated_clh,
+              currentLoad: d.currentLoad + selectedCourse.calculated_clh,
             }
           : d,
       ),
@@ -104,12 +94,11 @@ export default function AdminDashboardSubjectWise() {
 
     alert("Assignment approved");
 
-    setSelectedStaffId(null);
     setSelectedCourseId(null);
+    setSelectedStaffId(null);
   };
 
-  const canApprove =
-    selectedCourseId !== null && selectedStaffId !== null;
+  const canApprove = selectedCourseId !== null && selectedStaffId !== null;
 
   return (
     <div className="p-5 max-w-6xl mx-auto">
@@ -118,24 +107,27 @@ export default function AdminDashboardSubjectWise() {
       </h1>
 
       <div className="grid grid-cols-2 gap-5 h-[80vh]">
-        {/* LEFT: SUBJECTS */}
+        {/* LEFT: SUBJECT LIST */}
         <div className="overflow-y-auto">
           <h3 className="text-xl font-semibold mb-4">Subjects</h3>
-          <div className="bg-gray-50 rounded-lg">
-            {COURSES.map((course) => (
+
+          <div className="bg-gray-50 rounded-lg overflow-hidden">
+            {COURSES.map((course, idx) => (
               <div
                 key={course.course_id}
                 onClick={() => {
                   setSelectedCourseId(course.course_id);
                   setSelectedStaffId(null);
                 }}
-                className={`p-4 border-l-4 border-b cursor-pointer ${
+                className={`p-4 cursor-pointer border-b border-gray-300 border-l-4 transition-all ${
                   selectedCourseId === course.course_id
                     ? "bg-blue-100 border-l-blue-500"
-                    : "bg-white border-l-gray-300"
+                    : "bg-white border-l-blue-500 hover:bg-blue-50"
                 }`}
               >
-                <p className="font-bold">{course.name}</p>
+                <p className="font-bold">
+                  {idx + 1}. {course.name}
+                </p>
                 <p className="text-sm text-gray-600">
                   CLH: {course.calculated_clh}
                 </p>
@@ -149,12 +141,8 @@ export default function AdminDashboardSubjectWise() {
           {selectedCourse ? (
             <>
               <div className="p-4 bg-blue-500 text-white">
-                <h3 className="text-xl font-bold">
-                  {selectedCourse.name}
-                </h3>
-                <p>
-                  Course Load: {selectedCourse.calculated_clh} CLH
-                </p>
+                <h3 className="text-xl font-bold">{selectedCourse.name}</h3>
+                <p>Course Load: {selectedCourse.calculated_clh} CLH</p>
               </div>
 
               <div className="flex-1 p-4 overflow-y-auto">
@@ -168,27 +156,25 @@ export default function AdminDashboardSubjectWise() {
                         {rank === 1
                           ? "Choice I"
                           : rank === 2
-                          ? "Choice II"
-                          : "Choice III"}
+                            ? "Choice II"
+                            : "Choice III"}
                       </p>
 
                       <div className="space-y-2 ml-2">
                         {staffList.map((s) => (
                           <div
                             key={s.staff_id}
-                            onClick={() =>
-                              setSelectedStaffId(s.staff_id)
-                            }
-                            className={`p-2 rounded border cursor-pointer ${
+                            onClick={() => setSelectedStaffId(s.staff_id)}
+                            className={`p-3 rounded border cursor-pointer transition-all ${
                               selectedStaffId === s.staff_id
                                 ? "bg-green-100 border-green-500"
-                                : "bg-white"
+                                : "bg-white hover:bg-gray-50"
                             }`}
                           >
                             <p className="font-semibold">{s.name}</p>
                             <p className="text-sm text-gray-600">
-                              {s.rank} | Load:{" "}
-                              {s.currentLoad}/{s.max_load_clh} CLH
+                              {s.rank} | Load: {s.currentLoad}/{s.max_load_clh}{" "}
+                              CLH
                             </p>
                           </div>
                         ))}
@@ -202,7 +188,7 @@ export default function AdminDashboardSubjectWise() {
                 <button
                   onClick={handleApprove}
                   disabled={!canApprove}
-                  className={`flex-1 py-2 rounded font-bold ${
+                  className={`flex-1 py-2 rounded font-bold transition-all ${
                     canApprove
                       ? "bg-green-500 text-white hover:bg-green-600"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -210,12 +196,13 @@ export default function AdminDashboardSubjectWise() {
                 >
                   Approve Assignments
                 </button>
+
                 <button
                   onClick={() => {
                     setSelectedCourseId(null);
                     setSelectedStaffId(null);
                   }}
-                  className="px-4 py-2 bg-gray-500 text-white rounded"
+                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-all"
                 >
                   Cancel
                 </button>
