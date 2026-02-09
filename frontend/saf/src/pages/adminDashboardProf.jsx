@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const RANK_PRIORITY = {
   Professor: 1,
@@ -46,23 +47,21 @@ const STAFF_DETAILS = [
 ];
 
 const PREFERENCES = [
-  // -------- Staff 1 --------
   { staff_id: 1, course_id: 1, preference_rank: 1 },
   { staff_id: 1, course_id: 2, preference_rank: 1 },
   { staff_id: 1, course_id: 5, preference_rank: 2 },
   { staff_id: 1, course_id: 4, preference_rank: 3 },
 
-  // -------- Staff 2 --------
   { staff_id: 2, course_id: 3, preference_rank: 1 },
   { staff_id: 2, course_id: 7, preference_rank: 2 },
   { staff_id: 2, course_id: 6, preference_rank: 3 },
 
-  // -------- Staff 3 --------
   { staff_id: 3, course_id: 8, preference_rank: 1 },
   { staff_id: 3, course_id: 4, preference_rank: 2 },
   { staff_id: 3, course_id: 5, preference_rank: 2 },
-  { staff_id: 3, course_id: 2, preference_rank: 3 },]
-  
+  { staff_id: 3, course_id: 2, preference_rank: 3 },
+];
+
 export default function AdminDashboardProf() {
   const [staffDetails, setStaffDetails] = useState(STAFF_DETAILS);
   const [selectedStaffId, setSelectedStaffId] = useState(null);
@@ -95,13 +94,34 @@ export default function AdminDashboardProf() {
   };
 
   const handleApprove = () => {
+    if (!selectedStaffId || currentAssignments.length === 0) {
+      toast.error("❌ No courses selected for assignment");
+      return;
+    }
+
+    const addedCLH = calculateCLH(currentAssignments);
+    const newLoad = staffDetail.currentLoad + addedCLH;
+
+    if (newLoad > staffMeta.max_load_clh) {
+      toast("⚠️ Assignment exceeds maximum load", {
+        icon: "🚫",
+        duration: 10000,
+      });
+      return;
+    }
+
     setStaffDetails(prev =>
       prev.map(d =>
         d.staff_id === selectedStaffId
-          ? { ...d, currentLoad: d.currentLoad + calculateCLH(currentAssignments) }
+          ? { ...d, currentLoad: newLoad }
           : d,
       ),
     );
+
+    toast.success(
+      `✅ ${currentAssignments.length} course(s) assigned to ${staffDetail.name}`,
+    );
+
     setAssignments({});
     setSelectedStaffId(null);
   };
@@ -120,7 +140,10 @@ export default function AdminDashboardProf() {
             return (
               <div
                 key={s.staff_id}
-                onClick={() => setSelectedStaffId(s.staff_id)}
+                onClick={() => {
+                  setSelectedStaffId(s.staff_id);
+                  toast(`👨‍🏫 Assigning courses to ${d.name}`, { duration: 2000 });
+                }}
                 className={`p-4 border-b border-l-4 cursor-pointer ${
                   selectedStaffId === s.staff_id
                     ? "bg-blue-100 border-l-blue-500"
@@ -189,7 +212,10 @@ export default function AdminDashboardProf() {
                 Approve Assignments
               </button>
               <button
-                onClick={() => setSelectedStaffId(null)}
+                onClick={() => {
+                  setSelectedStaffId(null);
+                  toast("ℹ️ Assignment cancelled");
+                }}
                 className="px-4 py-2 bg-gray-500 text-white rounded"
               >
                 Cancel

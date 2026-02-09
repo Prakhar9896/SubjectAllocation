@@ -1,12 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+
 import AdminDashboardProf from "./adminDashboardProf";
 import AdminDashboardSubjectWise from "./adminDashboardSubj";
 
 export default function UnifiedAdminDashboard() {
   const [mode, setMode] = useState("FACULTY"); // FACULTY | SUBJECT
 
+  useEffect(() => {
+    toast("⚠️ Admin Notice: Review pending allocations", {
+      duration: 3000,
+    });
+  }, []);
+
   return (
     <div className="p-5 max-w-6xl mx-auto">
+      {/* 🔔 TOASTER */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 300000, // 5 minutes
+          style: {
+            background: "#000",
+            color: "#fff",
+            fontSize: "15px",
+            fontWeight: "600",
+            padding: "14px 18px",
+            borderRadius: "8px",
+            boxShadow: "0 8px 25px rgba(0,0,0,0.3)",
+          },
+        }}
+      />
+
       {/* MODE TOGGLE */}
       <div className="inline-flex mb-6 rounded-lg border border-gray-300 overflow-hidden">
         <button

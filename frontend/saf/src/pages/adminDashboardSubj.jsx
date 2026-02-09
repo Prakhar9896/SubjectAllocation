@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 /* ---------------- CONSTANTS ---------------- */
 
@@ -60,15 +61,15 @@ export default function AdminDashboardSubjectWise() {
   const [selectedStaffId, setSelectedStaffId] = useState(null);
   const [staffDetails, setStaffDetails] = useState(STAFF_DETAILS_INIT);
 
-  const selectedCourse = COURSES.find((c) => c.course_id === selectedCourseId);
+  const selectedCourse = COURSES.find(c => c.course_id === selectedCourseId);
 
-  const getStaffForRank = (rank) => {
+  const getStaffForRank = rank => {
     return PREFERENCES.filter(
-      (p) => p.course_id === selectedCourseId && p.preference_rank === rank,
+      p => p.course_id === selectedCourseId && p.preference_rank === rank,
     )
-      .map((p) => {
-        const staff = STAFF.find((s) => s.staff_id === p.staff_id);
-        const detail = staffDetails.find((d) => d.staff_id === p.staff_id);
+      .map(p => {
+        const staff = STAFF.find(s => s.staff_id === p.staff_id);
+        const detail = staffDetails.find(d => d.staff_id === p.staff_id);
         return { ...staff, ...detail };
       })
       .sort((a, b) => {
@@ -79,20 +80,34 @@ export default function AdminDashboardSubjectWise() {
   };
 
   const handleApprove = () => {
-    if (!selectedCourseId || !selectedStaffId) return;
+    if (!selectedCourseId || !selectedStaffId) {
+      toast.error("❌ Select a subject and faculty before approving");
+      return;
+    }
 
-    setStaffDetails((prev) =>
-      prev.map((d) =>
+    const staffMeta = STAFF.find(s => s.staff_id === selectedStaffId);
+    const staffDetail = staffDetails.find(d => d.staff_id === selectedStaffId);
+    const newLoad = staffDetail.currentLoad + selectedCourse.calculated_clh;
+
+    if (newLoad > staffMeta.max_load_clh) {
+      toast("⚠️ Assignment exceeds faculty load limit", {
+        icon: "🚫",
+        duration: 10000,
+      });
+      return;
+    }
+
+    setStaffDetails(prev =>
+      prev.map(d =>
         d.staff_id === selectedStaffId
-          ? {
-              ...d,
-              currentLoad: d.currentLoad + selectedCourse.calculated_clh,
-            }
+          ? { ...d, currentLoad: newLoad }
           : d,
       ),
     );
 
-    alert("Assignment approved");
+    toast.success(
+      `${selectedCourse.name} assigned successfully`,
+    );
 
     setSelectedCourseId(null);
     setSelectedStaffId(null);
@@ -109,8 +124,6 @@ export default function AdminDashboardSubjectWise() {
       <div className="grid grid-cols-2 gap-5 h-[80vh]">
         {/* LEFT: SUBJECT LIST */}
         <div className="overflow-y-auto">
-          <h3 className="text-xl font-semibold mb-4">Subjects</h3>
-
           <div className="bg-gray-50 rounded-lg overflow-hidden">
             {COURSES.map((course, idx) => (
               <div
@@ -118,6 +131,7 @@ export default function AdminDashboardSubjectWise() {
                 onClick={() => {
                   setSelectedCourseId(course.course_id);
                   setSelectedStaffId(null);
+                  toast(`📘 Selected ${course.name}`, { duration: 2000 });
                 }}
                 className={`p-4 cursor-pointer border-b border-gray-300 border-l-4 transition-all ${
                   selectedCourseId === course.course_id
@@ -146,7 +160,7 @@ export default function AdminDashboardSubjectWise() {
               </div>
 
               <div className="flex-1 p-4 overflow-y-auto">
-                {[1, 2, 3].map((rank) => {
+                {[1, 2, 3].map(rank => {
                   const staffList = getStaffForRank(rank);
                   if (!staffList.length) return null;
 
@@ -161,10 +175,13 @@ export default function AdminDashboardSubjectWise() {
                       </p>
 
                       <div className="space-y-2 ml-2">
-                        {staffList.map((s) => (
+                        {staffList.map(s => (
                           <div
                             key={s.staff_id}
-                            onClick={() => setSelectedStaffId(s.staff_id)}
+                            onClick={() => {
+                              setSelectedStaffId(s.staff_id);
+                              toast(`👨‍🏫 Selected ${s.name}`, { duration: 2000 });
+                            }}
                             className={`p-3 rounded border cursor-pointer transition-all ${
                               selectedStaffId === s.staff_id
                                 ? "bg-green-100 border-green-500"
@@ -173,8 +190,7 @@ export default function AdminDashboardSubjectWise() {
                           >
                             <p className="font-semibold">{s.name}</p>
                             <p className="text-sm text-gray-600">
-                              {s.rank} | Load: {s.currentLoad}/{s.max_load_clh}{" "}
-                              CLH
+                              {s.rank} | Load: {s.currentLoad}/{s.max_load_clh} CLH
                             </p>
                           </div>
                         ))}
@@ -201,6 +217,7 @@ export default function AdminDashboardSubjectWise() {
                   onClick={() => {
                     setSelectedCourseId(null);
                     setSelectedStaffId(null);
+                    toast("ℹ️ Assignment cancelled");
                   }}
                   className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-all"
                 >
