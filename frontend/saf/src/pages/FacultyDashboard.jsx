@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./FacultyDashboard.css";
 import logo from "../assets/manipal-logo.png";
 
+const MAX_SUBJECTS_PER_CHOICE = 10;
+
 export default function FacultyDashboard({
   facultyProfile = {
     name: "Dr. A. Sharma",
@@ -98,17 +100,10 @@ export default function FacultyDashboard({
   });
 
   const [selectedChoice, setSelectedChoice] = useState("choice1");
+  const [warningChoice, setWarningChoice] = useState(null);
 
-  const calculateCLH = (selected) =>
-    selected.reduce((sum, c) => sum + c.clh * (c.sections || 1), 0);
-
-  const getTotalCLH = () => {
-    return calculateCLH([
-      ...choices.choice1,
-      ...choices.choice2,
-      ...choices.choice3,
-    ]);
-  };
+  const getTotalSubjects = () =>
+    choices.choice1.length + choices.choice2.length + choices.choice3.length;
 
   const isCourseSelected = (courseId) => {
     return (
@@ -136,6 +131,13 @@ export default function FacultyDashboard({
   });
 
   const handleAddCourse = (courseWithSections) => {
+    // Check if this choice has reached the limit
+    if (choices[selectedChoice].length >= MAX_SUBJECTS_PER_CHOICE) {
+      setWarningChoice(selectedChoice);
+      setTimeout(() => setWarningChoice(null), 3000);
+      return;
+    }
+
     setChoices((prev) => {
       if (prev[selectedChoice].some((c) => c.id === courseWithSections.id)) return prev;
       return {
@@ -150,11 +152,13 @@ export default function FacultyDashboard({
       ...prev,
       [choiceKey]: prev[choiceKey].filter((c) => c.id !== courseId),
     }));
+    // Clear warning for this choice if it was showing
+    if (warningChoice === choiceKey) setWarningChoice(null);
   };
 
   const handleSubmit = () => {
     console.log("Submitted preferences:", choices);
-    alert(`Preferences submitted successfully!\nTotal CLH: ${getTotalCLH()}`);
+    alert(`Preferences submitted successfully!\nTotal Subjects: ${getTotalSubjects()}`);
   };
 
   const handleClearAll = () => {
@@ -163,6 +167,13 @@ export default function FacultyDashboard({
       choice2: [],
       choice3: [],
     });
+    setWarningChoice(null);
+  };
+
+  const choiceLabelMap = {
+    choice1: "Choice 1",
+    choice2: "Choice 2",
+    choice3: "Choice 3",
   };
 
   return (
@@ -171,15 +182,13 @@ export default function FacultyDashboard({
       <nav className="navbar">
         <div className="navbar-content">
           <div className="navbar-logo">
-            <img 
+            <img
               src={logo}
-              alt="Manipal Academy of Higher Education" 
+              alt="Manipal Academy of Higher Education"
               className="logo-image"
             />
           </div>
-          <div className="navbar-title">
-            
-          </div>
+          <div className="navbar-title"></div>
         </div>
       </nav>
 
@@ -292,7 +301,7 @@ export default function FacultyDashboard({
                   <option value="fintech">CSE & FIN-TECH</option>
                   <option value="it">IT</option>
                   <option value="cce">CCE</option>
-                  <option value="cne">CSE (Computer Networking and Engg.) </option>
+                  <option value="cne">CSE (Computer Networking and Engg.)</option>
                   <option value="aids">CSE (AIDS)</option>
                   <option value="cs">CSE(Cyber security)</option>
                   <option value="dse">DSE</option>
@@ -323,11 +332,7 @@ export default function FacultyDashboard({
                 <div className="add-hint">
                   Click + to add to{" "}
                   <span className="selected-choice-text">
-                    {selectedChoice === "choice1"
-                      ? "Choice 1"
-                      : selectedChoice === "choice2"
-                      ? "Choice 2"
-                      : "Choice 3"}
+                    {choiceLabelMap[selectedChoice]}
                   </span>
                 </div>
               </div>
@@ -339,7 +344,9 @@ export default function FacultyDashboard({
                   {filteredCourses.map((course) => {
                     const isSelected = isCourseSelected(course.id);
                     const choiceLocation = getCourseChoiceLocation(course.id);
-                    
+                    const currentChoiceFull =
+                      choices[selectedChoice].length >= MAX_SUBJECTS_PER_CHOICE;
+
                     return (
                       <div
                         key={course.id}
@@ -348,9 +355,7 @@ export default function FacultyDashboard({
                         <div className="course-card-content">
                           <div className="course-info">
                             <div className="course-header">
-                              <div className="course-name">
-                                {course.name}
-                              </div>
+                              <div className="course-name">{course.name}</div>
                               <div className={`clh-badge ${isSelected ? "clh-selected" : ""}`}>
                                 {course.clh} CLH
                               </div>
@@ -370,9 +375,7 @@ export default function FacultyDashboard({
                               <span className={`tag ${course.is_core ? "tag-core" : "tag-elective"}`}>
                                 {course.is_core ? "Core" : "Elective"}
                               </span>
-                              <span className="tag tag-branch">
-                                {course.branch}
-                              </span>
+                              <span className="tag tag-branch">{course.branch}</span>
                             </div>
 
                             {isSelected && (
@@ -388,12 +391,7 @@ export default function FacultyDashboard({
                                     clipRule="evenodd"
                                   />
                                 </svg>
-                                Added to{" "}
-                                {choiceLocation === "choice1"
-                                  ? "Choice 1"
-                                  : choiceLocation === "choice2"
-                                  ? "Choice 2"
-                                  : "Choice 3"}
+                                Added to {choiceLabelMap[choiceLocation]}
                               </div>
                             )}
                           </div>
@@ -414,12 +412,23 @@ export default function FacultyDashboard({
                             )}
                             <button
                               onClick={() => {
-                                const sectionsInput = document.getElementById(`sections-${course.id}`);
-                                const sections = sectionsInput ? parseInt(sectionsInput.value) || 1 : 1;
+                                const sectionsInput = document.getElementById(
+                                  `sections-${course.id}`
+                                );
+                                const sections = sectionsInput
+                                  ? parseInt(sectionsInput.value) || 1
+                                  : 1;
                                 handleAddCourse({ ...course, sections });
                               }}
-                              disabled={isSelected}
-                              className={`add-btn ${isSelected ? "add-btn-disabled" : ""}`}
+                              disabled={isSelected || (!isSelected && currentChoiceFull)}
+                              className={`add-btn ${isSelected ? "add-btn-disabled" : ""} ${
+                                !isSelected && currentChoiceFull ? "add-btn-limit" : ""
+                              }`}
+                              title={
+                                !isSelected && currentChoiceFull
+                                  ? `${choiceLabelMap[selectedChoice]} is full (max ${MAX_SUBJECTS_PER_CHOICE} subjects)`
+                                  : ""
+                              }
                             >
                               {isSelected ? "✓" : "+"}
                             </button>
@@ -447,9 +456,7 @@ export default function FacultyDashboard({
                     </svg>
                   </div>
                   <p className="empty-title">No courses match your filters</p>
-                  <p className="empty-subtitle">
-                    Try adjusting your filter criteria
-                  </p>
+                  <p className="empty-subtitle">Try adjusting your filter criteria</p>
                 </div>
               )}
             </div>
@@ -461,9 +468,9 @@ export default function FacultyDashboard({
               <h2 className="preferences-title">My Preferences</h2>
               <div className="load-indicator">
                 <div className="load-text">
-                  <span>Total Load</span>
+                  <span>Total Subjects Selected</span>
                   <span className="load-value">
-                    {getTotalCLH()} / {facultyProfile.maxLoad} CLH
+                    {getTotalSubjects()} / {3 * MAX_SUBJECTS_PER_CHOICE}
                   </span>
                 </div>
                 <div className="progress-bar">
@@ -471,7 +478,7 @@ export default function FacultyDashboard({
                     className="progress-fill"
                     style={{
                       width: `${Math.min(
-                        (getTotalCLH() / facultyProfile.maxLoad) * 100,
+                        (getTotalSubjects() / (3 * MAX_SUBJECTS_PER_CHOICE)) * 100,
                         100
                       )}%`,
                     }}
@@ -490,8 +497,12 @@ export default function FacultyDashboard({
                 >
                   Choice {index + 1}
                   {choices[key].length > 0 && (
-                    <span className={`choice-badge ${selectedChoice === key ? "choice-badge-active" : ""}`}>
-                      {choices[key].length}
+                    <span
+                      className={`choice-badge ${selectedChoice === key ? "choice-badge-active" : ""} ${
+                        choices[key].length >= MAX_SUBJECTS_PER_CHOICE ? "choice-badge-full" : ""
+                      }`}
+                    >
+                      {choices[key].length}/{MAX_SUBJECTS_PER_CHOICE}
                     </span>
                   )}
                 </button>
@@ -505,19 +516,68 @@ export default function FacultyDashboard({
                   key={key}
                   className={selectedChoice === key ? "choice-visible" : "choice-hidden"}
                 >
+                  {/* Warning banner */}
+                  {warningChoice === key && (
+                    <div className="limit-warning">
+                      <svg
+                        className="warning-icon"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                        />
+                      </svg>
+                      <span>
+                        Limit reached! Max {MAX_SUBJECTS_PER_CHOICE} subjects allowed per choice.
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Subject count indicator */}
+                  <div className="choice-subject-count">
+                    <span className="subject-count-label">Subjects in this choice</span>
+                    <span
+                      className={`subject-count-value ${
+                        choices[key].length >= MAX_SUBJECTS_PER_CHOICE
+                          ? "subject-count-full"
+                          : ""
+                      }`}
+                    >
+                      {choices[key].length} / {MAX_SUBJECTS_PER_CHOICE}
+                    </span>
+                  </div>
+                  <div className="subject-count-bar">
+                    <div
+                      className={`subject-count-fill ${
+                        choices[key].length >= MAX_SUBJECTS_PER_CHOICE
+                          ? "subject-count-fill-full"
+                          : ""
+                      }`}
+                      style={{
+                        width: `${(choices[key].length / MAX_SUBJECTS_PER_CHOICE) * 100}%`,
+                      }}
+                    />
+                  </div>
+
                   {choices[key].length > 0 ? (
-                    <div className="selected-courses">
+                    <div className="selected-courses" style={{ marginTop: "0.75rem" }}>
                       {choices[key].map((course) => (
                         <div key={course.id} className="selected-course-card">
                           <div className="selected-course-content">
                             <div className="selected-course-info">
-                              <h4 className="selected-course-name">
-                                {course.name}
-                              </h4>
+                              <h4 className="selected-course-name">{course.name}</h4>
                               <div className="selected-course-details">
                                 <span className="detail-clh">{course.clh} CLH</span>
                                 <span>•</span>
-                                <span>{course.sections || 1} Section{(course.sections || 1) > 1 ? 's' : ''}</span>
+                                <span>
+                                  {course.sections || 1} Section
+                                  {(course.sections || 1) > 1 ? "s" : ""}
+                                </span>
                                 <span>•</span>
                                 <span>{course.program}</span>
                                 <span>•</span>
@@ -551,7 +611,7 @@ export default function FacultyDashboard({
                         <div className="choice-total-content">
                           <span>Choice {index + 1} Total</span>
                           <span className="choice-total-value">
-                            {calculateCLH(choices[key])} CLH
+                            {choices[key].length} subject{choices[key].length !== 1 ? "s" : ""}
                           </span>
                         </div>
                       </div>
@@ -573,9 +633,7 @@ export default function FacultyDashboard({
                           />
                         </svg>
                       </div>
-                      <p className="empty-choice-title">
-                        No courses in Choice {index + 1}
-                      </p>
+                      <p className="empty-choice-title">No courses in Choice {index + 1}</p>
                       <p className="empty-choice-subtitle">
                         Click + on courses to add them here
                       </p>

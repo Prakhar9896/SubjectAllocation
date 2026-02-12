@@ -288,7 +288,7 @@ body {
 }
 
 .course-card:hover {
-  border-color:#0b3c5d;
+  border-color: #0b3c5d;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -474,6 +474,19 @@ body {
   cursor: not-allowed;
 }
 
+/* Greyed-out add button when choice is at limit */
+.add-btn.add-btn-limit {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.add-btn.add-btn-limit:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 /* Empty State */
 .empty-state {
   display: flex;
@@ -603,7 +616,7 @@ body {
 .choice-tab.choice-tab-active {
   background-color: white;
   color: #0b3c5d;
-  border-bottom-color:#0b3c5d;
+  border-bottom-color: #0b3c5d;
 }
 
 .choice-badge {
@@ -621,6 +634,12 @@ body {
   color: #0b3c5d;
 }
 
+/* Badge turns red/orange when full */
+.choice-badge.choice-badge-full {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
 /* Choice Content */
 .choice-content {
   flex: 1;
@@ -634,6 +653,85 @@ body {
 
 .choice-hidden {
   display: none;
+}
+
+/* Warning banner when limit is hit */
+.limit-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background-color: #fff7ed;
+  border: 1.5px solid #f97316;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #c2410c;
+  animation: fadeInSlide 0.25s ease;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.warning-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: #f97316;
+}
+
+/* Per-choice subject count bar */
+.choice-subject-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.375rem;
+}
+
+.subject-count-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.subject-count-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0b3c5d;
+}
+
+.subject-count-value.subject-count-full {
+  color: #dc2626;
+}
+
+.subject-count-bar {
+  height: 0.375rem;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.subject-count-fill {
+  height: 100%;
+  background-color: #0b3c5d;
+  border-radius: 9999px;
+  transition: width 0.4s ease, background-color 0.3s;
+}
+
+.subject-count-fill.subject-count-fill-full {
+  background-color: #ef4444;
 }
 
 .selected-courses {

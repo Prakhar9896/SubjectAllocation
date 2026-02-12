@@ -4,7 +4,7 @@ import Facultyauth from "./pages/Facultyauth";
 import FacultyRegister from "./pages/FacultyRegister";
 import RoleSelector from "./components/RoleSelector";
 import FacultyDashboard from "./pages/FacultyDashboard";
-
+import FacultyProfile from "./pages/FacultyProfile";
 export default function App() {
   return (
     <Router>
@@ -14,6 +14,7 @@ export default function App() {
         <Route path="/register" element={<FacultyRegister />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/fdb" element={<FacultyDashboard />} />
+        <Route path='/fp' element={<FacultyProfile />} />
       </Routes>
     </Router>
   );
