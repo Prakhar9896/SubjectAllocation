@@ -8,6 +8,7 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import AdminDashboardProf from "./pages/adminDashboardProf";
 import AdminDashboardSubj from "./pages/adminDashboardSubj";
 import AdminDashboard from "./pages/adminDashboard";
+import FacultyProfile from "./pages/FacultyProfile";
 export default function App() {
   const [facultyProfile, setFacultyProfile] = useState({
     name: "Dr. Sarah Johnson",
@@ -29,6 +30,8 @@ export default function App() {
         <Route path="admin-dashboard-subj" element={<AdminDashboardSubj/>}/>
         <Route path='admin-dashboard' element={<AdminDashboard/>}/>
         <Route path="admin-dashboard-prof" element={<AdminDashboardProf/>}/>
+        <Route path="/fdb" element={<FacultyDashboard />} />
+        <Route path='/fp' element={<FacultyProfile />} />
       </Routes>
     </Router>
   );

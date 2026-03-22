@@ -1,5 +1,5 @@
-import logo from "../assets/manipal-logo.png";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/manipal-logo.png";
 
 export default function RoleSelector() {
   const navigate = useNavigate();
